@@ -49,13 +49,21 @@ app.delete('/api/persons/:id', (req, res) => {
   res.status(204).end()
 })
 
+
 app.post('/api/persons', (req, res) => {
   const body = req.body
+
+  if (persons.filter(person => person.name.toLowerCase() === body.name.toLowerCase()).length > 0) {
+    return res.status(400).json({
+      error: 'name must be unique'
+    })
+  }
   if (!body.name || !body.number) {
     return res.status(400).json({
       error: 'name or number missing'
     })
   }
+
   const id = Math.floor(Math.random() * 1000000)
   const person = {
     id: id,
