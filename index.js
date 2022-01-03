@@ -3,6 +3,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
 
+app.use(express.static('build'))
 app.use(cors())
 app.use(express.json())
 
@@ -33,10 +34,6 @@ let persons = [
     number: "39-23-6423122"
   }
 ]
-
-app.get('/', (req, res) => {
-  res.send('<a href="/info">Go to info</a>')
-})
 
 app.get('/info', (req, res) => {
   const info = `<p>Phonebook has info for ${persons.length} people</p>
