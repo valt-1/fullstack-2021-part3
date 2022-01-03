@@ -34,6 +34,10 @@ let persons = [
   }
 ]
 
+app.get('/', (req, res) => {
+  res.send('<a href="/info">Go to info</a>')
+})
+
 app.get('/info', (req, res) => {
   const info = `<p>Phonebook has info for ${persons.length} people</p>
                 <p>${new Date()}</p>`
