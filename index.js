@@ -68,25 +68,25 @@ app.delete('/api/persons/:id', (req, res) => {
 app.post('/api/persons', (req, res) => {
   const body = req.body
 
-  if (persons.filter(person => person.name.toLowerCase() === body.name.toLowerCase()).length > 0) {
-    return res.status(400).json({
-      error: 'name must be unique'
-    })
-  }
+  // if (persons.filter(person => person.name.toLowerCase() === body.name.toLowerCase()).length > 0) {
+  //   return res.status(400).json({
+  //     error: 'name must be unique'
+  //   })
+  // }
   if (!body.name || !body.number) {
     return res.status(400).json({
       error: 'name or number missing'
     })
   }
 
-  const id = Math.floor(Math.random() * 1000000)
-  const person = {
-    id: id,
+  const person = new Person({
     name: body.name,
     number: body.number
-  }
-  persons = persons.concat(person)
-  res.json(person)
+  })
+
+  person.save().then(savedPerson => {
+    res.json(savedPerson)
+  })
 })
 
 const PORT = process.env.PORT
