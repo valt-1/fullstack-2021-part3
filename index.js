@@ -31,9 +31,7 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/api/persons', (req, res) => {
-  Person.find({}).then(result => {
-    res.json(result)
-  })
+  Person.find({}).then(result => res.json(result))
 })
 
 app.post('/api/persons', (req, res) => {
@@ -55,9 +53,7 @@ app.post('/api/persons', (req, res) => {
     number: body.number
   })
 
-  person.save().then(savedPerson => {
-    res.json(savedPerson)
-  })
+  person.save().then(savedPerson => res.json(savedPerson))
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
@@ -71,9 +67,19 @@ app.get('/api/persons/:id', (req, res, next) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
-    .then(result => {
-      res.status(204).end()
-    })
+    .then(result => res.status(204).end())
+    .catch(error => next(error))
+})
+
+app.put('/api/persons/:id', (req, res, next) => {
+  const body = req.body
+  const person = {
+    name: body.name,
+    number: body.number
+  }
+
+  Person.findByIdAndUpdate(req.params.id, person, {new: true})
+    .then(updatedPerson => res.json(updatedPerson))
     .catch(error => next(error))
 })
 
