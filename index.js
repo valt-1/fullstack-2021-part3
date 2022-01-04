@@ -9,6 +9,14 @@ app.use(express.static('build'))
 app.use(cors())
 app.use(express.json())
 
+const errorHandler = (error, req, res, next) => {
+  console.log(error.message)
+  if (error.name === 'CastError') {
+    return res.status(400).send({error: 'malformatted id'})
+  }
+  next(error)
+}
+
 morgan.token('body', (req, res) => {
   if (req.method === 'POST') return JSON.stringify(req.body)
 })
@@ -27,20 +35,6 @@ app.get('/api/persons', (req, res) => {
     res.json(result)
   })
 })
-
-app.get('/api/persons/:id', (req, res) => {
-  Person.findById(req.params.id).then(result => {
-    if (result) res.json(result)
-    else res.status(404).end()
-  })
-})
-
-app.delete('/api/persons/:id', (req, res) => {
-  Person.findByIdAndRemove(req.params.id).then(result => {
-    res.status(204).end()
-  })
-})
-
 
 app.post('/api/persons', (req, res) => {
   const body = req.body
@@ -65,6 +59,25 @@ app.post('/api/persons', (req, res) => {
     res.json(savedPerson)
   })
 })
+
+app.get('/api/persons/:id', (req, res, next) => {
+  Person.findById(req.params.id)
+    .then(result => {
+      if (result) res.json(result)
+      else res.status(404).end()
+    })
+    .catch(error => next(error))
+})
+
+app.delete('/api/persons/:id', (req, res, next) => {
+  Person.findByIdAndRemove(req.params.id)
+    .then(result => {
+      res.status(204).end()
+    })
+    .catch(error => next(error))
+})
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT)
